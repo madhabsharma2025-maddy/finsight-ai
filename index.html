@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinSight AI — Institutional Financial Research</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--navy:#0A1628;--navy-mid:#0F2040;--navy-light:#162B52;
+--accent:#0EA5E9;--accent-glow:#38BDF8;
+--success:#10B981;--warning:#F59E0B;--danger:#EF4444;
+--slate:#94A3B8;--slate-light:#CBD5E1;--white:#F8FAFC;
+--card:#111C30;--border:#1E3A5F;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--navy);color:var(--white);min-height:100vh}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--navy-mid);border-right:1px solid var(--border);padding:20px 16px;display:flex;flex-direction:column;gap:4px;position:fixed;top:0;left:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;padding:0 0 24px}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,#0EA5E9,#1D4ED8);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.logo-text{font-size:16px;font-weight:700;letter-spacing:-0.02em}
+.logo-sub{font-size:10px;color:var(--slate);letter-spacing:0.08em;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--slate);width:100%;text-align:left;transition:all 0.15s}
+.nav-btn:hover{background:var(--navy-light);color:var(--white)}
+.nav-btn.active{background:var(--navy-light);color:var(--accent-glow)}
+.nav-btn i{font-size:17px}
+.sources{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+.src-label{font-size:11px;color:var(--slate);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+.src-item{font-size:12px;color:var(--slate-light);padding:3px 0;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot-green{background:var(--success)}
+.dot-amber{background:var(--warning)}
+.main{margin-left:220px;padding:28px 32px;flex:1}
+.page{display:none}.page.active{display:block}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--slate);margin-bottom:24px}
+.search-row{display:flex;gap:10px;margin-bottom:16px}
+.search-row input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--white);font-size:14px;outline:none}
+.search-row input:focus{border-color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:12px 22px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-primary:hover{background:var(--accent-glow)}
+.btn-sm{background:var(--navy-light);color:var(--white);border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer}
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.quick-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--slate-light);cursor:pointer;transition:all 0.15s}
+.quick-btn:hover{border-color:var(--accent);color:var(--accent-glow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+.card-bd{padding:18px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.stat-lbl{font-size:11px;color:var(--slate);margin-top:5px;text-transform:uppercase;letter-spacing:0.06em}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid}
+.badge-accent{background:#0EA5E920;color:var(--accent-glow);border-color:#0EA5E940}
+.badge-success{background:#052E16;color:var(--success);border-color:#10B98140}
+.badge-warning{background:#1C0F00;color:var(--warning);border-color:#F59E0B40}
+.badge-danger{background:#1F0505;color:var(--danger);border-color:#EF444440}
+.badge-muted{background:var(--navy-light);color:var(--slate);border-color:var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border)}
+td{padding:13px 16px;border-bottom:1px solid #1E3A5F20;color:var(--slate-light)}
+td:first-child{color:var(--white);font-weight:500}
+tr:hover td{background:#162B5220;cursor:pointer}
+.loading{display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:14px;color:var(--slate)}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.analysis{display:none}
+.analysis-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.section-block{background:var(--navy-light);border-radius:10px;padding:14px}
+.section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.section-content{font-size:13px;color:var(--slate-light);line-height:1.65}
+.flag-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #1E3A5F30;font-size:13px;color:var(--slate-light)}
+.flag-item:last-child{border:none}
+.verdict-box{background:#0EA5E915;border:1px solid #0EA5E930;border-radius:10px;padding:16px;margin-top:16px}
+.verdict-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-glow);margin-bottom:8px}
+.peer-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1E3A5F20;font-size:13px}
+.peer-row:last-child{border:none}
+.peer-bar-wrap{width:100px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.peer-bar{height:100%;border-radius:3px;background:var(--accent)}
+.chat-wrap{display:flex;flex-direction:column;gap:10px;max-height:240px;overflow-y:auto;margin-bottom:10px;padding:4px}
+.chat-msg{max-width:86%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
+.chat-user{background:var(--accent);color:#fff;align-self:flex-end;border-radius:12px 12px 4px 12px;margin-left:auto}
+.chat-ai{background:var(--navy-light);border:1px solid var(--border);color:var(--white);align-self:flex-start;border-radius:12px 12px 12px 4px;white-space:pre-wrap}
+.chat-input-row{display:flex;gap:8px}
+.chat-input-row input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--white);font-size:13px;outline:none}
+.chat-input-row input:focus{border-color:var(--accent)}
+.alert-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.alert-item:last-child{border:none}
+.alert-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+.plan-card.featured{border:2px solid var(--accent)}
+.plan-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.plan-price{font-size:26px;font-weight:800;color:var(--accent-glow);margin-bottom:14px}
+.plan-price span{font-size:13px;color:var(--slate);font-weight:400}
+.plan-feat{font-size:12px;color:var(--slate-light);padding:4px 0;display:flex;align-items:center;gap:6px}
+.plan-feat i{color:var(--success);font-size:14px}
+.notif{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--white);box-shadow:0 8px 32px #00000060;display:none;align-items:center;gap:10px;z-index:999}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all 0.15s}
+.report-card:hover{border-color:var(--accent)}
+.report-icon{font-size:28px;margin-bottom:12px}
+.report-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.report-desc{font-size:12px;color:var(--slate);line-height:1.5;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">F</div>
+    <div>
+      <div class="logo-text">FinSight AI</div>
+      <div class="logo-sub">Research Platform</div>
+    </div>
+  </div>
+  <button class="nav-btn active" onclick="showPage('search',this)"><i class="ti ti-search"></i> Research</button>
+  <button class="nav-btn" onclick="showPage('watchlist',this)"><i class="ti ti-star"></i> Watchlist</button>
+  <button class="nav-btn" onclick="showPage('alerts',this)"><i class="ti ti-bell"></i> Alerts <span class="badge badge-danger" style="margin-left:auto;padding:2px 7px;font-size:10px">3</span></button>
+  <button class="nav-btn" onclick="showPage('reports',this)"><i class="ti ti-file-text"></i> Reports</button>
+  <button class="nav-btn" onclick="showPage('pricing',this)"><i class="ti ti-credit-card"></i> Pricing</button>
+  <div class="sources">
+    <div class="src-label">Live Sources</div>
+    <div class="src-item"><span class="dot dot-green"></span>SEC EDGAR</div>
+    <div class="src-item"><span class="dot dot-green"></span>Companies House</div>
+    <div class="src-item"><span class="dot dot-green"></span>Euronext</div>
+    <div class="src-item"><span class="dot dot-amber"></span>ECB Data</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- RESEARCH PAGE -->
+<div id="page-search" class="page active">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+    <div>
+      <div class="page-title">Company Research</div>
+      <div class="page-sub">AI-powered analysis from live regulatory filings</div>
+    </div>
+    <span class="badge badge-accent">14-day free trial</span>
+  </div>
+  <div class="search-row">
+    <input type="text" id="search-input" placeholder="Enter company name — e.g. Apple, Microsoft, Barclays, AIB Group..." onkeydown="if(event.key==='Enter')runAnalysis()"/>
+    <button class="btn-primary" onclick="runAnalysis()"><i class="ti ti-sparkles"></i> Analyse</button>
+  </div>
+  <div class="quick-row">
+    <span style="font-size:12px;color:var(--slate);padding-top:4px">Quick:</span>
+    <button class="quick-btn" onclick="qs('Apple Inc')">Apple</button>
+    <button class="quick-btn" onclick="qs('Microsoft')">Microsoft</button>
+    <button class="quick-btn" onclick="qs('Rolls-Royce Holdings')">Rolls-Royce</button>
+    <button class="quick-btn" onclick="qs('Barclays')">Barclays</button>
+    <button class="quick-btn" onclick="qs('AIB Group')">AIB Group</button>
+  </div>
+
+  <div id="home-content">
+    <div class="grid4">
+      <div class="stat-card"><div class="stat-val" style="color:var(--accent-glow)">2,400+</div><div class="stat-lbl">Companies tracked</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--success)">Real-time</div><div class="stat-lbl">Filing updates</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--warning)">30 sec</div><div class="stat-lbl">Analysis time</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--white)">95%</div><div class="stat-lbl">Analyst time saved</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-hd">Recent analyses</div>
+        <table>
+          <tr><th>Company</th><th>Score</th><th>Signal</th></tr>
+          <tr onclick="qs('Apple Inc')"><td>Apple Inc</td><td><span class="badge badge-success">82</span></td><td><span class="badge badge-success">Positive</span></td></tr>
+          <tr onclick="qs('Barclays')"><td>Barclays plc</td><td><span class="badge badge-warning">61</span></td><td><span class="badge badge-warning">Neutral</span></td></tr>
+          <tr onclick="qs('AIB Group')"><td>AIB Group</td><td><span class="badge badge-success">74</span></td><td><span class="badge badge-success">Positive</span></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-hd">Market activity</div>
+        <div class="card-bd" style="padding:8px 0">
+          <div class="alert-item" style="padding:10px 18px">
+            <div class="alert-icon" style="background:#052E16"><i class="ti ti-trending-up" style="color:var(--success)"></i></div>
+            <div><div style="font-size:13px;font-weight:600">NVIDIA Q2 earnings beat</div><div style="font-size:12px;color:var(--slate)">Revenue +122% YoY — 2h ago</div></div>
+          </div>
+          <div class="alert-item" style="padding:10px 18px">
+            <div class="alert-icon" style="background:#1C0F00"><i class="ti ti-alert-triangle" style="color:var(--warning)"></i></div>
+            <div><div style="font-size:13px;font-weight:600">Rolls-Royce new filing</div><div style="font-size:12px;color:var(--slate)">Half-year report — 4h ago</div></div>
+          </div>
+          <div class="alert-item" style="padding:10px 18px;border:none">
+            <div class="alert-icon" style="background:#0EA5E915"><i class="ti ti-building-bank" style="color:var(--accent)"></i></div>
+            <div><div style="font-size:13px;font-weight:600">AIB secondary offering</div><div style="font-size:12px;color:var(--slate)">€400M raise confirmed — 6h ago</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="loading-area">
+    <div class="spinner"></div>
+    <div id="loading-text">Fetching latest filings...</div>
+  </div>
+
+  <div class="analysis" id="analysis-area">
+    <div class="analysis-hd">
+      <div>
+        <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em" id="co-name"></div>
+        <div style="font-size:12px;color:var(--slate);margin-top:3px" id="co-meta"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="co-signal"></span>
+        <button class="btn-sm" onclick="showNotif('PDF exported successfully')"><i class="ti ti-download"></i> Export PDF</button>
+        <button class="btn-sm" onclick="closeAnalysis()"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-val" id="m-score" style="color:var(--accent-glow)"></div><div class="stat-lbl">AI Score</div></div>
+      <div class="stat-card"><div class="stat-val" id="m-rev"></div><div class="stat-lbl">Revenue Growth</div></div>
+      <div class="stat-card"><div class="stat-val" id="m-flags" style="color:var(--warning)"></div><div class="stat-lbl">Risk Flags</div></div>
+      <div class="stat-card"><div class="stat-val" id="m-cap" style="font-size:16px;padding-top:4px"></div><div class="stat-lbl">Capital Markets</div></div>
+    </div>
+    <div class="grid2" style="margin-bottom:16px">
+      <div class="section-block">
+        <div class="section-title"><i class="ti ti-chart-bar"></i> Earnings Intelligence</div>
+        <div class="section-content" id="s-earnings"></div>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><i class="ti ti-alert-triangle"></i> Risk Flags</div>
+        <div id="s-risks"></div>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><i class="ti ti-building-bank"></i> Capital Markets Activity</div>
+        <div class="section-content" id="s-capital"></div>
+      </div>
+      <div class="section-block">
+        <div class="section-title"><i class="ti ti-shield-check"></i> Regulatory & Compliance</div>
+        <div class="section-content" id="s-regulatory"></div>
+      </div>
+    </div>
+    <div class="section-block" style="margin-bottom:16px">
+      <div class="section-title"><i class="ti ti-users"></i> Peer Comparison</div>
+      <div id="s-peers"></div>
+    </div>
+    <div class="verdict-box">
+      <div class="verdict-lbl"><i class="ti ti-sparkles"></i> AI Analyst Verdict</div>
+      <div class="section-content" id="s-verdict"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-hd"><span><i class="ti ti-message-circle"></i> Ask FinSight AI</span><span style="font-size:12px;color:var(--success)">● Live</span></div>
+      <div class="card-bd">
+        <div class="chat-wrap" id="chat-messages"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="quick-qs"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Ask anything about this company..." onkeydown="if(event.key==='Enter')sendChat()"/>
+          <button class="btn-primary" style="padding:9px 16px" onclick="sendChat()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WATCHLIST -->
+<div id="page-watchlist" class="page">
+  <div class="page-title">Watchlist</div>
+  <div class="page-sub">6 companies tracked · Updated 2 min ago</div>
+  <div class="card">
+    <table>
+      <tr><th>Company</th><th>Sector</th><th>AI Score</th><th>Signal</th><th>Last Filing</th><th>Alert</th></tr>
+      <tr onclick="qs('Apple Inc')"><td>Apple Inc</td><td><span class="badge badge-muted">US Tech</span></td><td><span class="badge badge-success">82</span></td><td><span class="badge badge-success">Positive</span></td><td>3 days ago</td><td><span class="badge badge-muted">None</span></td></tr>
+      <tr onclick="qs('Microsoft')"><td>Microsoft Corp</td><td><span class="badge badge-muted">US Tech</span></td><td><span class="badge badge-success">79</span></td><td><span class="badge badge-success">Positive</span></td><td>1 week ago</td><td><span class="badge badge-muted">None</span></td></tr>
+      <tr onclick="qs('Barclays')"><td>Barclays plc</td><td><span class="badge badge-muted">UK Bank</span></td><td><span class="badge badge-warning">61</span></td><td><span class="badge badge-warning">Neutral</span></td><td>Today</td><td><span class="badge badge-warning">New filing</span></td></tr>
+      <tr onclick="qs('AIB Group')"><td>AIB Group</td><td><span class="badge badge-muted">IE Bank</span></td><td><span class="badge badge-success">74</span></td><td><span class="badge badge-success">Positive</span></td><td>2 days ago</td><td><span class="badge badge-accent">Offering</span></td></tr>
+      <tr onclick="qs('Rolls-Royce Holdings')"><td>Rolls-Royce Holdings</td><td><span class="badge badge-muted">UK Industrial</span></td><td><span class="badge badge-success">71</span></td><td><span class="badge badge-success">Positive</span></td><td>Today</td><td><span class="badge badge-warning">New filing</span></td></tr>
+      <tr onclick="qs('Ryanair')"><td>Ryanair Holdings</td><td><span class="badge badge-muted">IE Aviation</span></td><td><span class="badge badge-warning">58</span></td><td><span class="badge badge-warning">Neutral</span></td><td>5 days ago</td><td><span class="badge badge-muted">None</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ALERTS -->
+<div id="page-alerts" class="page">
+  <div class="page-title">Alerts</div>
+  <div class="page-sub">3 new alerts requiring attention</div>
+  <div class="card"><div class="card-bd" style="padding:0 18px">
+    <div class="alert-item">
+      <div class="alert-icon" style="background:#1F0505"><i class="ti ti-alert-circle" style="color:var(--danger)"></i></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:13px;font-weight:600">Barclays — Material risk flag</span><span class="badge badge-danger">Critical</span><span style="font-size:11px;color:var(--slate);margin-left:auto">2h ago</span></div>
+        <div style="font-size:12px;color:var(--slate)">FCA regulatory disclosure filed. Litigation exposure flagged in footnotes. Immediate review recommended.</div>
+      </div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-icon" style="background:#0EA5E915"><i class="ti ti-building-bank" style="color:var(--accent)"></i></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:13px;font-weight:600">AIB Group — Secondary offering confirmed</span><span class="badge badge-accent">Capital Markets</span><span style="font-size:11px;color:var(--slate);margin-left:auto">4h ago</span></div>
+        <div style="font-size:12px;color:var(--slate)">€400M secondary share offering priced at €5.20. Euronext Dublin filing confirmed. Dilution ~3.2%.</div>
+      </div>
+    </div>
+    <div class="alert-item" style="border:none">
+      <div class="alert-icon" style="background:#1C0F00"><i class="ti ti-file-text" style="color:var(--warning)"></i></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:13px;font-weight:600">Rolls-Royce — Half-year report published</span><span class="badge badge-warning">New Filing</span><span style="font-size:11px;color:var(--slate);margin-left:auto">6h ago</span></div>
+        <div style="font-size:12px;color:var(--slate)">H1 2025 results filed. Operating profit +34% YoY. Civil aerospace recovery continuing strongly.</div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- REPORTS -->
+<div id="page-reports" class="page">
+  <div class="page-title">Reports</div>
+  <div class="page-sub">Generate institutional-grade research reports</div>
+  <div class="grid3">
+    <div class="report-card" onclick="showNotif('Morning digest generated — check your email')">
+      <div class="report-icon">📊</div>
+      <div class="report-title">Morning Digest</div>
+      <div class="report-desc">Daily summary of new filings, risk flags and capital markets activity across your watchlist.</div>
+      <button class="btn-primary" style="width:100%;font-size:12px;padding:9px">Generate</button>
+    </div>
+    <div class="report-card" onclick="showNotif('Portfolio risk report ready for download')">
+      <div class="report-icon">📈</div>
+      <div class="report-title">Portfolio Risk Report</div>
+      <div class="report-desc">Consolidated risk scores, flag summary, and peer benchmarks across all tracked companies.</div>
+      <button class="btn-primary" style="width:100%;font-size:12px;padding:9px">Generate</button>
+    </div>
+    <div class="report-card" onclick="showNotif('Due diligence pack exported as PDF')">
+      <div class="report-icon">📋</div>
+      <div class="report-title">Due Diligence Pack</div>
+      <div class="report-desc">Full 5-year filing history, risk timeline, ownership structure and regulatory disclosures in one PDF.</div>
+      <button class="btn-primary" style="width:100%;font-size:12px;padding:9px">Export PDF</button>
+    </div>
+    <div class="report-card" onclick="showNotif('Earnings briefing sent to your email')">
+      <div class="report-icon">📅</div>
+      <div class="report-title">Earnings Briefing</div>
+      <div class="report-desc">Pre-earnings summary with consensus vs guidance analysis and key management call questions.</div>
+      <button class="btn-primary" style="width:100%;font-size:12px;padding:9px">Generate</button>
+    </div>
+    <div class="report-card" onclick="showNotif('Sector deep dive generated')">
+      <div class="report-icon">🏭</div>
+      <div class="report-title">Sector Deep Dive</div>
+      <div class="report-desc">Full sector analysis with peer comparison, capital markets activity and regulatory overview.</div>
+      <button class="btn-primary" style="width:100%;font-size:12px;padding:9px">Generate</button>
+    </div>
+    <div class="report-card" onclick="showNotif('MiFID II compliance report generated')">
+      <div class="report-icon">🛡️</div>
+      <div class="report-title">MiFID II Compliance</div>
+      <div class="report-desc">Research unbundling audit log, disclosure checklist, and regulatory filing summary for compliance.</div>
+      <button class="btn-primary" style="width:100%;font-size:12px;padding:9px">Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="page-pricing" class="page">
+  <div class="page-title">Pricing</div>
+  <div class="page-sub">Simple and transparent. No contract. Cancel anytime.</div>
+  <div class="grid3" style="margin-top:8px">
+    <div class="plan-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">€199<span>/month</span></div>
+      <div style="font-size:11px;color:var(--slate);margin-bottom:16px">Up to 3 users</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> 50 analyses/month</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> Morning digest email</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> PDF export</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> 14-day free trial</div>
+      <button class="btn-sm" style="width:100%;margin-top:18px;padding:10px" onclick="showNotif('Starting your free trial...')">Start free trial</button>
+    </div>
+    <div class="plan-card featured">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="plan-name">Professional</div>
+        <span class="badge badge-accent" style="font-size:10px">Most popular</span>
+      </div>
+      <div class="plan-price">€499<span>/month</span></div>
+      <div style="font-size:11px;color:var(--slate);margin-bottom:16px">Up to 10 users</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> Unlimited analyses</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> Real-time filing alerts</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> API access</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> Priority support</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> 14-day free trial</div>
+      <button class="btn-primary" style="width:100%;margin-top:18px" onclick="showNotif('Starting Professional trial...')">Start free trial</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price">€1,500<span>/month</span></div>
+      <div style="font-size:11px;color:var(--slate);margin-bottom:16px">Unlimited users</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> White-label reports</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> Custom AI training</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> Dedicated account manager</div>
+      <div class="plan-feat"><i class="ti ti-check"></i> SLA guarantee</div>
+      <button class="btn-sm" style="width:100%;margin-top:18px;padding:10px" onclick="showNotif('Our team will contact you within 2 hours')">Contact sales</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<div class="notif" id="notif">
+  <i class="ti ti-check" style="color:var(--success)"></i>
+  <span id="notif-text"></span>
+</div>
+
+<script>
+const API_KEY = '%%VITE_ANTHROPIC_API_KEY%%';
+
+const COMPANIES={
+'Apple Inc':{ticker:'AAPL',sector:'Technology · US',score:82,rev:'+8% YoY',flags:2,cap:'Buyback Active',signal:'Positive',earnings:'Revenue reached $94.9B in Q1 FY2025, up 4% YoY. iPhone sales stabilised at $69.1B. Services segment grew 14% to $26.3B — fastest growing division. Gross margin expanded to 47.1%. EPS beat consensus by $0.06 at $2.40.',risks:[{c:'warning',t:'China revenue — 17% of total sales, regulatory risk elevated'},{c:'accent',t:'Vision Pro adoption slower than projected in launch year'}],capital:'Share buyback programme active — $90B authorised. No recent equity issuance. Dividend increased 4% to $0.25/quarter.',regulatory:'MiFID II research disclosures present and compliant. No ESG controversies. FATCA structures disclosed. Audit opinion: unqualified.',peers:[{n:'Microsoft',s:79,p:96},{n:'Alphabet',s:71,p:87},{n:'Meta',s:68,p:83},{n:'Amazon',s:65,p:79}],verdict:'Apple presents a fundamentally strong balance sheet with $162B cash. Services growth trajectory supports multiple expansion. Key watch: China regulatory environment and AI monetisation timeline. Bull: Services reaches $40B run rate FY2026. Bear: China market access restrictions accelerate.',qs:["What is Apple's China revenue risk?","Explain Services growth outlook","Any capital markets activity planned?"]},
+'Microsoft':{ticker:'MSFT',sector:'Technology · US',score:79,rev:'+16% YoY',flags:1,cap:'Buyback Active',signal:'Positive',earnings:'Q2 FY2025 revenue $69.6B, up 12% YoY. Azure cloud grew 31%, ahead of 28% consensus. Copilot AI driving commercial seat expansion. Operating income $31.7B, margin 46%. EPS $3.23 beat by $0.14.',risks:[{c:'accent',t:'EU regulatory scrutiny on Teams bundling — ongoing investigation'}],capital:'No equity issuance. $60B buyback active. Dividend raised 10% to $0.83/quarter.',regulatory:'Full MiFID II compliance. ESG disclosures comprehensive. Carbon neutral pledge 2030 on track.',peers:[{n:'Apple',s:82,p:100},{n:'Alphabet',s:71,p:87},{n:'Salesforce',s:63,p:77},{n:'Oracle',s:58,p:71}],verdict:'Azure trajectory and Copilot monetisation make Microsoft the most defensible AI infrastructure play. Regulatory overhang on Teams is manageable. Activision integration dilutive short-term but strategically sound.',qs:["How is Azure competing with AWS?","What is Copilot revenue contribution?","EU regulatory risk on Teams?"]},
+'Rolls-Royce Holdings':{ticker:'RR.',sector:'Industrials · UK',score:71,rev:'+18% YoY',flags:3,cap:'Buyback Initiated',signal:'Positive',earnings:'H1 2025 underlying operating profit £1.1B, up 74% YoY. Civil aerospace large engine flying hours at 112% of 2019 pre-pandemic levels. Power Systems revenue up 22%. FCF £1.3B. Net debt reduced to £0.8B.',risks:[{c:'warning',t:'FX headwind — significant USD revenue vs GBP cost base'},{c:'warning',t:'Supply chain constraints in civil aerospace — delivery delays noted'},{c:'accent',t:'Defence programme timing — some contracts subject to government approval'}],capital:'No equity issuance since 2020 rights issue. Share buyback £1B initiated. Dividend reinstatement expected FY2025.',regulatory:'MiFID II compliant. Defence contracts subject to UK export licence disclosures. Net zero 2050 commitment.',peers:[{n:'GE Aerospace',s:74,p:100},{n:'Safran',s:69,p:93},{n:'MTU Aero',s:64,p:86},{n:'RTX Corp',s:61,p:82}],verdict:'Rolls-Royce is in structural recovery with genuine operational improvement. Flying hours metric is the leading indicator. FX is the primary risk. At current trajectory FY2025 FCF guidance of £2.1B–£2.3B looks achievable.',qs:["What drives the flying hours metric?","Explain the FX exposure","Is the dividend reinstatement confirmed?"]},
+'Barclays':{ticker:'BARC',sector:'Banking · UK',score:61,rev:'+4% YoY',flags:4,cap:'Buyback Active',signal:'Neutral',earnings:'Q1 2025 income £7.0B, up 11% YoY. NIM compressed to 2.8% vs 3.1% prior year. Barclays UK performing well. Investment Bank revenue £3.2B up 8%. Impairment charges £513M — elevated vs £371M prior year.',risks:[{c:'danger',t:'Motor finance FCA investigation — potential redress liability £0.5–2.0B'},{c:'warning',t:'NIM compression expected to continue as BoE cuts rates'},{c:'warning',t:'US credit card delinquency rates edging higher'},{c:'accent',t:'Basel III endgame — US regulatory capital timeline uncertainty'}],capital:'£1B buyback completed Q1. New £750M buyback announced. AT1 bond issuance £0.5B at 6.375%.',regulatory:'FCA motor finance review is key regulatory risk. PRA capital ratios: CET1 13.6% vs 13.0% target.',peers:[{n:'HSBC',s:67,p:100},{n:'Lloyds',s:64,p:95},{n:'NatWest',s:62,p:93},{n:'Std Chartered',s:58,p:87}],verdict:'Investment bank outperforming but motor finance FCA investigation is a material overhang. Liability range wide at £0.5B–£2.0B. NIM pressure structural. Neutral stance appropriate until motor finance resolution.',qs:["Explain the motor finance FCA risk","What is the NIM outlook?","How strong is the investment bank?"]},
+'AIB Group':{ticker:'AIBG',sector:'Banking · Ireland',score:74,rev:'+11% YoY',flags:2,cap:'Offering Complete',signal:'Positive',earnings:'FY2024 net interest income €3.6B, up 9% YoY. NIM 2.71% — strong by European standards. Cost-to-income ratio 38%, best in class among Irish banks. Loan book grew 7% to €71B. NPL ratio 2.6%, down from 3.1%. DPS 38 cent.',risks:[{c:'warning',t:'Irish property concentration — 58% of loan book is mortgage and SME'},{c:'accent',t:'ECB rate cuts will compress NIM — guided 2.5–2.6% for FY2025'}],capital:'€400M secondary offering completed June 2025 at €5.20. Irish state shareholding reduced from 12% to 8.6%. Buyback €100M authorised.',regulatory:'Central Bank of Ireland oversight. CET1 16.2% vs 11.5% minimum. Climate transition plan published Jan 2025.',peers:[{n:'Bank of Ireland',s:71,p:96},{n:'Permanent TSB',s:55,p:74}],verdict:'AIB is one of the strongest performing European banks by return metrics. Secondary offering overhang now cleared. NIM compression is the primary watch item but cost discipline and loan growth offset this. Irish economy backdrop remains supportive.',qs:["Impact of ECB rate cuts on AIB?","Is the state selling more shares?","How does AIB compare to Bank of Ireland?"]}
+};
+
+let currentCo=null,chatHistory=[];
+
+function showPage(p,btn){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+function qs(name){
+  document.getElementById('search-input').value=name;
+  showPage('search',document.querySelector('.nav-btn.active'));
+  runAnalysis();
+}
+
+async function runAnalysis(){
+  const q=document.getElementById('search-input').value.trim();
+  if(!q)return;
+  const matchKey=Object.keys(COMPANIES).find(k=>k.toLowerCase().includes(q.toLowerCase())||q.toLowerCase().includes(k.toLowerCase().split(' ')[0]));
+  document.getElementById('home-content').style.display='none';
+  document.getElementById('loading-area').style.display='flex';
+  document.getElementById('analysis-area').style.display='none';
+  const msgs=['Fetching latest filings from SEC EDGAR...','Pulling Companies House data...','Running AI analysis...','Calculating risk score and peers...'];
+  let mi=0;
+  const lt=document.getElementById('loading-text');
+  const iv=setInterval(()=>{mi=(mi+1)%msgs.length;lt.textContent=msgs[mi]},900);
+  await new Promise(r=>setTimeout(r,2800));
+  clearInterval(iv);
+  document.getElementById('loading-area').style.display='none';
+  if(matchKey){renderAnalysis(matchKey,COMPANIES[matchKey]);}
+  else{await runLiveAnalysis(q);}
+}
+
+function renderAnalysis(name,d){
+  currentCo={name,data:d};chatHistory=[];
+  document.getElementById('chat-messages').innerHTML='';
+  document.getElementById('co-name').textContent=name+' ('+d.ticker+')';
+  document.getElementById('co-meta').textContent=d.sector+' · AI Score: '+d.score+'/100 · Source: SEC EDGAR + Companies House';
+  const sc={Positive:'badge-success',Neutral:'badge-warning',Negative:'badge-danger'};
+  document.getElementById('co-signal').innerHTML='<span class="badge '+sc[d.signal]+'">'+d.signal+'</span>';
+  document.getElementById('m-score').textContent=d.score+'/100';
+  document.getElementById('m-rev').textContent=d.rev;
+  document.getElementById('m-flags').textContent=d.flags+(d.flags===1?' Flag':' Flags');
+  document.getElementById('m-cap').textContent=d.cap;
+  document.getElementById('s-earnings').textContent=d.earnings;
+  const rc={danger:'var(--danger)',warning:'var(--warning)',accent:'var(--accent-glow)'};
+  const ri={danger:'ti-alert-circle',warning:'ti-alert-triangle',accent:'ti-info-circle'};
+  document.getElementById('s-risks').innerHTML=d.risks.map(r=>'<div class="flag-item"><i class="ti '+ri[r.c]+'" style="color:'+rc[r.c]+';flex-shrink:0;margin-top:1px"></i><span>'+r.t+'</span></div>').join('');
+  document.getElementById('s-capital').textContent=d.capital;
+  document.getElementById('s-regulatory').textContent=d.regulatory;
+  document.getElementById('s-peers').innerHTML=d.peers.map(p=>'<div class="peer-row"><span style="flex:1;color:var(--white);font-weight:500">'+p.n+'</span><div class="peer-bar-wrap"><div class="peer-bar" style="width:'+p.p+'%"></div></div><span class="badge '+(p.s>=70?'badge-success':p.s>=50?'badge-warning':'badge-danger')+'" style="min-width:40px;justify-content:center">'+p.s+'</span></div>').join('');
+  document.getElementById('s-verdict').textContent=d.verdict;
+  document.getElementById('quick-qs').innerHTML=d.qs.map(q=>'<button class="quick-btn" onclick="setChat(\''+q+'\')">'+q+'</button>').join('');
+  document.getElementById('analysis-area').style.display='block';
+}
+
+async function runLiveAnalysis(query){
+  try{
+    const apiKey=document.getElementById('api-key-store')?.value||'';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:'You are FinSight AI. Analyse the company and respond in this exact format separated by |||:\nEARNINGS: 3 sentences\nRISKS: 2-3 bullet points starting with •\nCAPITAL: 2 sentences\nREGULATORY: 2 sentences\nVERDICT: 3 sentences with bull and bear case\nSCORE: number 1-100\nSIGNAL: Positive or Neutral or Negative',messages:[{role:'user',content:'Analyse: '+query}]})
+    });
+    const data=await resp.json();
+    const text=data.content?.[0]?.text||'';
+    const parts=text.split('|||');
+    if(parts.length>=7){
+      const d={ticker:query.substring(0,4).toUpperCase(),sector:'Global · AI Analysis',score:parseInt(parts[5])||65,rev:'See analysis',flags:(parts[1].match(/•/g)||[]).length,cap:'See analysis',signal:parts[6].trim().split('\n')[0].trim(),earnings:parts[0].replace('EARNINGS:','').trim(),risks:(parts[1].replace('RISKS:','').trim()).split('•').filter(Boolean).map(r=>({c:'warning',t:r.trim()})),capital:parts[2].replace('CAPITAL:','').trim(),regulatory:parts[3].replace('REGULATORY:','').trim(),peers:[],verdict:parts[4].replace('VERDICT:','').trim(),qs:['What are the key risks?','Explain the financial performance','Any capital markets activity?']};
+      renderAnalysis(query,d);
+    }else{showNotif('Company not in database — try Apple, Microsoft, Barclays, Rolls-Royce or AIB');}
+  }catch(e){showNotif('Company not in database — try Apple, Microsoft, Barclays, Rolls-Royce or AIB');}
+}
+
+function closeAnalysis(){
+  document.getElementById('analysis-area').style.display='none';
+  document.getElementById('home-content').style.display='block';
+}
+
+async function sendChat(){
+  if(!currentCo)return;
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+  const chatEl=document.getElementById('chat-messages');
+  chatEl.innerHTML+='<div style="display:flex;justify-content:flex-end"><div class="chat-msg chat-user">'+msg+'</div></div>';
+  chatEl.innerHTML+='<div id="typing" style="display:flex"><div class="chat-msg chat-ai" style="color:var(--slate)">Analysing...</div></div>';
+  chatEl.scrollTop=chatEl.scrollHeight;
+  chatHistory.push({role:'user',content:msg});
+  try{
+    const apiKey=document.getElementById('api-key-store')?.value||'';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:'You are FinSight AI, expert institutional financial analyst. Analysing '+currentCo.name+'. Context: '+JSON.stringify(currentCo.data)+'. Be concise, professional, specific. Max 120 words.',messages:chatHistory})
+    });
+    const data=await resp.json();
+    const reply=data.content?.[0]?.text||'Unable to generate analysis.';
+    chatHistory.push({role:'assistant',content:reply});
+    document.getElementById('typing')?.remove();
+    chatEl.innerHTML+='<div style="display:flex"><div class="chat-msg chat-ai">'+reply+'</div></div>';
+    chatEl.scrollTop=chatEl.scrollHeight;
+  }catch(e){document.getElementById('typing')?.remove();chatEl.innerHTML+='<div style="display:flex"><div class="chat-msg chat-ai">Connection error. Please try again.</div></div>';}
+}
+
+function setChat(q){document.getElementById('chat-input').value=q;sendChat();}
+
+let nt;
+function showNotif(msg){
+  clearTimeout(nt);
+  const n=document.getElementById('notif');
+  document.getElementById('notif-text').textContent=msg;
+  n.style.display='flex';
+  nt=setTimeout(()=>{n.style.display='none'},3500);
+}
+</script>
+<input type="hidden" id="api-key-store" value="">
+</body>
+</html>
